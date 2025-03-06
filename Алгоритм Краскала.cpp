@@ -18,9 +18,7 @@ struct Dsu{
 	void init(int n) {
 		l.resize(n);
 		r.resize(n, 1);
-		for (int i = 0; i < n; ++i) {
-			l[i] = i;
-		}
+		iota(l.begin(), l.end(), 0); // l[i] = i
 	}
 	int leader(int v) {
 		if (l[v] == v) {
@@ -42,10 +40,6 @@ struct Dsu{
 	}
 };
 
-struct Edge {
-    int from, to, weight;
-};
-
 signed main(){
     int n, m;
     cin >> n >> m;
@@ -56,14 +50,12 @@ signed main(){
 */
     Dsu d; 
     d.init(n);
-    vector<Edge> edges(m);
-    for (Edge &e : edges) {
-        cin >> e.from >> e.to >> e.weight;
-        e.from--; e.to--;
+    vector<tuple<int, int, int> edges(m);
+    for (auto &[weight, from, to] : edges) {
+        cin >> weight >> from >> to;
+        from--; to--;
     }
-    sort(edges.begin(), edges.end(), [](Edge a, Edge b) {
-        return a.weight < b.weight;
-    });
+    sort(edges.begin(), edges.end());
 /*
 2. Перебор всех рёбер по возрастанию их веса:
 Выбираем ребро с наименьшим весом среди оставшихся.
@@ -73,9 +65,9 @@ signed main(){
 unite, множества с данными вершинами уже объединились).    
 */
     int ans = 0;
-    for (Edge &e : edges) {
-        if (d.unite(e.from, e.to)) {
-            ans += e.weight;
+    for (auto &[weight, from, to] : edges) {
+        if (d.unite(from, to)) {
+            ans += weight;
         }
     }
     cout << ans << '\n';
