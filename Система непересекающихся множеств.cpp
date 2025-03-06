@@ -21,9 +21,7 @@ struct Dsu {
 	void init(int n) {
 		l.resize(n);
 		r.resize(n, 1); // изначально высота каждого дерева 1
-		for (int i = 0; i < n; ++i) {
-			l[i] = i;
-		}
+		iota(l.begin(), l.end(), 0); // l[i] = i
 	}
 	/* 
  	Для запроса "в каком множестве элемент v" нужно подняться по ссылкам до лидера. 
@@ -49,11 +47,11 @@ struct Dsu {
 	  / \      / \
 	 1   2    4   5
 		   ...
-	        A
-          / | \
-         1  2  B
-              / \
-             4   5
+	    A
+	  / | \
+	 1  2  B
+	      / \
+	     4   5
 	*/
 	bool unite(int a, int b) {
 		a = leader(a); b = leader(b);
