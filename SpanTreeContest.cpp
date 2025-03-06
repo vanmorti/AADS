@@ -1,68 +1,43 @@
-﻿#include <iostream>
+#include <iostream>
 #include <vector>
-#include <algorithm>
-
+#include <set>
 using namespace std;
 
-typedef long long ll;
-#define int ll
+int main() {
+    int n, m;
+    cin >> n >> m;
+    vector<vector<pair<int, int>>> g(n); // Список смежности для хранения рёбер
+    for (int i = 0; i < m; ++i) {
+        int from, to, weight;
+        cin >> from >> to >> weight;
+        from--; to--;
 
-struct Dsu {
-    vector<int> l;
-    vector<int> r;
-    void set(int n) {
-        l.resize(n);
-        r.resize(n, 1);
-        for (int i = 0; i < n; ++i) {
-            l[i] = i;
-        }
+        g[from].push_back({weight, to});
+        g[to].push_back({weight, from});
     }
-    int leader(int v) {
-        if (l[v] == v) {
-            return v;
-        }
-        return l[v] = leader(l[v]);
+    vector<bool> in(n); // Массив для отслеживания вершин в минимальном остове
+    set<pair<int, int>> q; // Множество для хранения рёбер в порядке возрастания веса
+    // Начинаем с первой вершины
+    in[0] = true;
+    for (auto edge : g[0]) { // Добавляем все рёбра, исходящие из первой вершины
+        q.insert(edge);
     }
-    bool unite(int a, int b) {
-        a = leader(a); b = leader(b);
-        if (a == b) {
-            return false;
-        }
-        if (r[a] > r[b]) {
-            swap(a, b);
-        }
-        r[b] = max(r[b], r[a] + 1);
-        l[a] = b;
-        return true;
-    }
-};
-
-struct Edge {
-    int f, t, w;
-};
-struct Point {
-    int x, y;
-};
-bool cmp(Edge a, Edge b) {
-    return a.w < b.w;
-}
-
-signed main(){
-    int n;
-    cin >> n;
-    vector<Point> p(n);
-    for (Point &a : p) {
-        cin >> a.x >> a.y;
-    }
-    vector<
-    sort(edges.begin(), edges.end(), cmp);
     int ans = 0;
-    for (Edge &e : edges) {
-        if (d.unite(e.f, e.t)) {
-            ans += e.w;
+    while (!q.empty()) {
+        auto [w, v] = *q.begin(); // Получаем ребро с минимальным весом
+        q.erase(q.begin());
+        // Проверяем, находится ли вторая вершина ребра вне MST
+        if (!in[v]) {
+            ans += w;
+            in[v] = true; // Добавляем вторую вершину ребра в MST
+            // Добавляем все рёбра, исходящие из новой вершины в MST
+            for (auto [weight, to] : g[v]) {
+                if (!in[to]) {
+                    q.insert({weight, to});
+                }
+            }
         }
     }
-    cout << ans << '\n';
+    cout << ans << endl;
     return 0;
 }
-
